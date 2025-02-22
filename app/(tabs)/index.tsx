@@ -143,6 +143,11 @@ export default function HomeScreen() {
             <CropDetailsCard
               details={cropDetails}
               cropName={selectedCrop}
+              cropIcon={crops.find(c => c.name === selectedCrop)?.icon}
+              onClose={() => {
+                setSelectedCrop(null);
+                setCropDetails(null);
+              }}
             />
           )}
         </Modal>

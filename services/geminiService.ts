@@ -10,14 +10,22 @@ export async function getCropInformation(cropName: string, language: string = 'a
   const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
   const prompt = `
-    Please provide detailed agricultural information about ${cropName} in the following categories:
-    1. Planting guide and best seasons
-    2. Harvesting techniques and timing
-    3. Weather considerations and climate requirements
-    4. Recommended fertilizers and soil requirements
+    Please provide comprehensive agricultural information about ${cropName} in the following categories:
+    1. Planting guide and best seasons (including soil preparation and planting methods)
+    2. Harvesting techniques and optimal timing
+    3. Weather and climate requirements (including temperature, humidity, and rainfall needs)
+    4. Fertilizers and soil requirements (including organic and chemical options)
     5. Best practices for cultivation
+    6. Disease management and prevention
+    7. Pest control methods (including organic solutions)
+    8. Water management and irrigation techniques
+    9. Soil preparation and maintenance
+    10. Storage and post-harvest handling
+    11. Market value and economic considerations
+    12. Environmental impact and sustainability
+    13. Organic farming methods
     
-    Please provide the response in ${language} language.
+    Please provide detailed, practical information in ${language} language, focusing on sustainable and modern agricultural practices.
   `;
 
   try {
@@ -34,6 +42,14 @@ export async function getCropInformation(cropName: string, language: string = 'a
       weatherConsiderations: sections[2] || '',
       fertilizers: sections[3] || '',
       bestPractices: sections[4] || '',
+      diseaseManagement: sections[5] || '',
+      pestControl: sections[6] || '',
+      waterManagement: sections[7] || '',
+      soilPreparation: sections[8] || '',
+      storageGuidelines: sections[9] || '',
+      marketValue: sections[10] || '',
+      environmentalImpact: sections[11] || '',
+      organicFarming: sections[12] || '',
     };
   } catch (error) {
     console.error('Error getting crop information:', error);
