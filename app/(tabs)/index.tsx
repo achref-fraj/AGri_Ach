@@ -1,74 +1,146 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import React, { useState } from 'react';
+import { Image, StyleSheet, TouchableOpacity, View, Modal, ActivityIndicator } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { GeminiService } from '../../services/geminiService';
+import { CropDetailsCard } from '../../components/CropDetailsCard';
+import { CropDetails } from '../../types/agriculture';
+
+const crops = [
+  { id: '1', name: 'البابايا', icon: '🥭' },
+  { id: '2', name: 'الإجاص', icon: '🍐' },
+  { id: '3', name: 'الأرز', icon: '🌾' },
+  { id: '4', name: 'البامية', icon: '🥬' },
+  { id: '5', name: 'البازيلاء والحمص', icon: '🫘' },
+  { id: '6', name: 'الباذنجان', icon: '🍆' },
+  { id: '7', name: 'البصل', icon: '🧅' },
+  { id: '8', name: 'البسلة', icon: '🫛' },
+  { id: '9', name: 'الموز', icon: '🍌' },
+  { id: '10', name: 'المشمش', icon: '🍑' },
+  { id: '11', name: 'القمح', icon: '🌾' },
+  { id: '12', name: 'الطماطم', icon: '🍅' },
+  // Add more crops as needed
+];
 
 export default function HomeScreen() {
+  const [selectedCrop, setSelectedCrop] = useState<string | null>(null);
+  const [cropDetails, setCropDetails] = useState<CropDetails | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const geminiService = new GeminiService();
+
+  const handleCropSelect = async (cropName: string) => {
+    setIsLoading(true);
+    try {
+      const details = await geminiService.getCropInformation(cropName);
+      setCropDetails(details);
+      setSelectedCrop(cropName);
+    } catch (error) {
+      console.error('Error fetching crop details:', error);
+      // Handle error appropriately
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <ThemedView style={styles.container}>
+      <ThemedText style={styles.header}>قم بتحديد المحاصيل</ThemedText>
+      <ThemedText style={styles.subHeader}>حدد ما يصل إلى 8 من المحاصيل التي تهمك</ThemedText>
+
+      <View style={styles.cropGrid}>
+        {crops.map((crop) => (
+          <TouchableOpacity
+            key={crop.id}
+            style={styles.cropItem}
+            onPress={() => handleCropSelect(crop.name)}
+          >
+            <View style={styles.cropIconContainer}>
+              <ThemedText style={styles.cropIcon}>{crop.icon}</ThemedText>
+            </View>
+            <ThemedText style={styles.cropName}>{crop.name}</ThemedText>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <Modal
+        visible={!!selectedCrop && !!cropDetails}
+        animationType="slide"
+        onRequestClose={() => {
+          setSelectedCrop(null);
+          setCropDetails(null);
+        }}
+      >
+        {cropDetails && selectedCrop && (
+          <CropDetailsCard
+            details={cropDetails}
+            cropName={selectedCrop}
+          />
+        )}
+      </Modal>
+
+      {isLoading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <ThemedText>جاري تحميل المعلومات...</ThemedText>
+        </View>
+      )}
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#fff',
   },
-  stepContainer: {
-    gap: 8,
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'right',
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+  subHeader: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'right',
+    marginBottom: 24,
+  },
+  cropGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 16,
+  },
+  cropItem: {
+    width: '30%',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  cropIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#f0f0f0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  cropIcon: {
+    fontSize: 32,
+  },
+  cropName: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  loadingContainer: {
     position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
