@@ -60,19 +60,45 @@ export const CropDetailsCard: React.FC<CropDetailsCardProps> = ({
     }
   };
 
-  const renderSection = (title: string, content: string, icon: string) => {
+  const renderSection = (title: string, content: string) => {
     const isExpanded = expandedSection === title;
+
+    // Add logging to debug
+    console.log(`Rendering section ${title}:`, content);
+
+    // If content is empty, provide a default message
+    const displayContent = content || `لم يتم العثور على معلومات ل${title}`;
+
+    const iconMap: { [key: string]: string } = {
+      'دليل الزراعة': 'leaf-outline',
+      'دليل الحصاد': 'cut-outline',
+      'اعتبارات الطقس': 'partly-sunny-outline',
+      'الأسمدة والتربة': 'nutrition-outline',
+      'أفضل الممارسات': 'checkmark-circle-outline',
+      'إدارة الأمراض': 'medical-outline',
+      'مكافحة الآفات': 'warning-outline',
+      'إدارة المياه': 'water-outline',
+      'تحضير التربة': 'layers-outline',
+      'إرشادات التخزين': 'archive-outline',
+      'القيمة السوقية': 'cash-outline',
+      'الأثر البيئي': 'leaf-outline',
+      'الزراعة العضوية': 'flower-outline'
+    };
 
     return (
       <TouchableOpacity
         style={[styles.section, isExpanded && styles.expandedSection]}
         onPress={() => setExpandedSection(isExpanded ? null : title)}
-        activeOpacity={0.8}
+        activeOpacity={0.7}
       >
         <View style={styles.sectionHeader}>
           <View style={styles.sectionHeaderLeft}>
-            <Ionicons name={icon as any} size={24} color="#2c3e50" />
             <ThemedText style={styles.sectionTitle}>{title}</ThemedText>
+            <Ionicons 
+              name={iconMap[title] as any} 
+              size={24} 
+              color="#2c3e50" 
+            />
           </View>
           <Ionicons 
             name={isExpanded ? 'chevron-up' : 'chevron-down'} 
@@ -82,7 +108,7 @@ export const CropDetailsCard: React.FC<CropDetailsCardProps> = ({
         </View>
         {isExpanded && (
           <Animated.View style={styles.contentContainer}>
-            <ThemedText style={styles.content}>{content}</ThemedText>
+            <ThemedText style={styles.content}>{displayContent}</ThemedText>
           </Animated.View>
         )}
       </TouchableOpacity>
@@ -115,19 +141,19 @@ export const CropDetailsCard: React.FC<CropDetailsCardProps> = ({
         )}
         scrollEventThrottle={16}
       >
-        {renderSection('دليل الزراعة', details.plantingGuide, 'leaf-outline')}
-        {renderSection('دليل الحصاد', details.harvestingGuide, 'cut-outline')}
-        {renderSection('اعتبارات الطقس', details.weatherConsiderations, 'partly-sunny-outline')}
-        {renderSection('الأسمدة والتربة', details.fertilizers, 'nutrition-outline')}
-        {renderSection('أفضل الممارسات', details.bestPractices, 'checkmark-circle-outline')}
-        {renderSection('إدارة الأمراض', details.diseaseManagement, 'medical-outline')}
-        {renderSection('مكافحة الآفات', details.pestControl, 'warning-outline')}
-        {renderSection('إدارة المياه', details.waterManagement, 'water-outline')}
-        {renderSection('تحضير التربة', details.soilPreparation, 'layers-outline')}
-        {renderSection('إرشادات التخزين', details.storageGuidelines, 'archive-outline')}
-        {renderSection('القيمة السوقية', details.marketValue, 'cash-outline')}
-        {renderSection('الأثر البيئي', details.environmentalImpact, 'leaf-outline')}
-        {renderSection('الزراعة العضوية', details.organicFarming, 'flower-outline')}
+        {renderSection('دليل الزراعة', details.plantingGuide)}
+        {renderSection('دليل الحصاد', details.harvestingGuide)}
+        {renderSection('اعتبارات الطقس', details.weatherConsiderations)}
+        {renderSection('الأسمدة والتربة', details.fertilizers)}
+        {renderSection('أفضل الممارسات', details.bestPractices)}
+        {renderSection('إدارة الأمراض', details.diseaseManagement)}
+        {renderSection('مكافحة الآفات', details.pestControl)}
+        {renderSection('إدارة المياه', details.waterManagement)}
+        {renderSection('تحضير التربة', details.soilPreparation)}
+        {renderSection('إرشادات التخزين', details.storageGuidelines)}
+        {renderSection('القيمة السوقية', details.marketValue)}
+        {renderSection('الأثر البيئي', details.environmentalImpact)}
+        {renderSection('الزراعة العضوية', details.organicFarming)}
       </Animated.ScrollView>
     </SafeAreaView>
   );
@@ -177,7 +203,7 @@ const styles = StyleSheet.create({
     }),
   },
   titleContainer: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 8,
@@ -195,12 +221,15 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     padding: 16,
+    paddingBottom: 32,
   },
   section: {
-    marginBottom: 12,
+    marginBottom: 16,
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 16,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -209,38 +238,46 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
       },
       android: {
-        elevation: 2,
+        elevation: 3,
       },
     }),
   },
   expandedSection: {
     backgroundColor: '#f8f9fa',
+    borderColor: '#dee2e6',
   },
   sectionHeader: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingVertical: 8,
   },
   sectionHeaderLeft: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
+    flex: 1,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#2c3e50',
-    marginLeft: 8,
+    marginRight: 12,
+    textAlign: 'right',
+    flex: 1,
   },
   contentContainer: {
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
     borderTopColor: '#e9ecef',
+    paddingHorizontal: 8,
   },
   content: {
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: 15,
+    lineHeight: 24,
     color: '#34495e',
     textAlign: 'right',
+    paddingVertical: 8,
+    fontFamily: Platform.OS === 'ios' ? 'Arial' : 'Roboto',
   },
 }); 
