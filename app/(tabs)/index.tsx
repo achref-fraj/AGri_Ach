@@ -5,6 +5,8 @@ import { ThemedView } from '@/components/ThemedView';
 import { getCropInformation } from '../../services/geminiService';
 import { CropDetailsCard } from '../../components/CropDetailsCard';
 import { CropDetails } from '../../types/agriculture';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 const crops = [
   // Grains & Cereals
@@ -62,10 +64,11 @@ const crops = [
   { id: '40', name: 'الشبت', icon: '🌿' }
 ];
 
-export default function HomeScreen() {
+export default function AgricultureScreen() {
   const [selectedCrop, setSelectedCrop] = useState<string | null>(null);
   const [cropDetails, setCropDetails] = useState<CropDetails | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const renderCropSection = (title: string, cropsArray: typeof crops) => (
     <View style={styles.section}>
@@ -111,15 +114,15 @@ export default function HomeScreen() {
   const herbs = crops.slice(36);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ThemedView style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
         <View style={styles.header}>
-          <ThemedText style={styles.headerText}>قم بتحديد المحاصيل</ThemedText>
-          <ThemedText style={styles.subHeader}>اختر المحصول للحصول على معلومات مفصلة</ThemedText>
+          <ThemedText style={styles.headerText}>المحاصيل الزراعية</ThemedText>
+          <ThemedText style={styles.subHeader}>معلومات عن زراعة وإدارة المحاصيل</ThemedText>
         </View>
 
         <ScrollView 
-          style={styles.scrollView}
+          style={styles.contentScrollView}
           showsVerticalScrollIndicator={false}
         >
           {renderCropSection('الحبوب والأرز', grainCrops)}
@@ -158,18 +161,21 @@ export default function HomeScreen() {
             <ThemedText style={styles.loadingText}>جاري تحميل المعلومات...</ThemedText>
           </View>
         )}
-      </ThemedView>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
     backgroundColor: '#fff',
   },
-  container: {
+  scrollView: {
     flex: 1,
+  },
+  contentScrollView: {
+    padding: 16,
   },
   header: {
     padding: 16,
@@ -188,10 +194,6 @@ const styles = StyleSheet.create({
     color: '#6c757d',
     textAlign: 'right',
     marginTop: 4,
-  },
-  scrollView: {
-    flex: 1,
-    padding: 16,
   },
   section: {
     marginBottom: 24,

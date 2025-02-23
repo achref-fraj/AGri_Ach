@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { CropDetails } from '../types/agriculture';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
 
@@ -62,48 +62,86 @@ export const CropDetailsCard: React.FC<CropDetailsCardProps> = ({
 
   const renderSection = (title: string, content: string) => {
     const isExpanded = expandedSection === title;
-
-    // Add logging to debug
     console.log(`Rendering section ${title}:`, content);
-
-    // If content is empty, provide a default message
     const displayContent = content || `لم يتم العثور على معلومات ل${title}`;
 
-    const iconMap: { [key: string]: string } = {
-      'دليل الزراعة': 'leaf-outline',
-      'دليل الحصاد': 'cut-outline',
-      'اعتبارات الطقس': 'partly-sunny-outline',
-      'الأسمدة والتربة': 'nutrition-outline',
-      'أفضل الممارسات': 'checkmark-circle-outline',
-      'إدارة الأمراض': 'medical-outline',
-      'مكافحة الآفات': 'warning-outline',
-      'إدارة المياه': 'water-outline',
-      'تحضير التربة': 'layers-outline',
-      'إرشادات التخزين': 'archive-outline',
-      'القيمة السوقية': 'cash-outline',
-      'الأثر البيئي': 'leaf-outline',
-      'الزراعة العضوية': 'flower-outline'
+    // Enhanced icon mapping with better icons and colors
+    const iconConfig: { [key: string]: { icon: JSX.Element, color: string } } = {
+      'دليل الزراعة': {
+        icon: <MaterialCommunityIcons name="seed-outline" size={24} color="#2ecc71" />,
+        color: '#2ecc71'
+      },
+      'دليل الحصاد': {
+        icon: <MaterialCommunityIcons name="grain" size={24} color="#f39c12" />,
+        color: '#f39c12'
+      },
+      'اعتبارات الطقس': {
+        icon: <MaterialCommunityIcons name="weather-partly-cloudy" size={24} color="#3498db" />,
+        color: '#3498db'
+      },
+      'الأسمدة والتربة': {
+        icon: <FontAwesome5 name="hand-holding-water" size={24} color="#8e44ad" />,
+        color: '#8e44ad'
+      },
+      'أفضل الممارسات': {
+        icon: <MaterialCommunityIcons name="star-check-outline" size={24} color="#e67e22" />,
+        color: '#e67e22'
+      },
+      'إدارة الأمراض': {
+        icon: <FontAwesome5 name="disease" size={24} color="#e74c3c" />,
+        color: '#e74c3c'
+      },
+      'مكافحة الآفات': {
+        icon: <MaterialCommunityIcons name="bug-outline" size={24} color="#c0392b" />,
+        color: '#c0392b'
+      },
+      'إدارة المياه': {
+        icon: <MaterialCommunityIcons name="water-outline" size={24} color="#3498db" />,
+        color: '#3498db'
+      },
+      'تحضير التربة': {
+        icon: <MaterialCommunityIcons name="terrain" size={24} color="#795548" />,
+        color: '#795548'
+      },
+      'إرشادات التخزين': {
+        icon: <MaterialCommunityIcons name="warehouse" size={24} color="#7f8c8d" />,
+        color: '#7f8c8d'
+      },
+      'القيمة السوقية': {
+        icon: <MaterialCommunityIcons name="trending-up" size={24} color="#27ae60" />,
+        color: '#27ae60'
+      },
+      'الأثر البيئي': {
+        icon: <MaterialCommunityIcons name="nature" size={24} color="#16a085" />,
+        color: '#16a085'
+      },
+      'الزراعة العضوية': {
+        icon: <MaterialCommunityIcons name="sprout" size={24} color="#27ae60" />,
+        color: '#27ae60'
+      }
     };
 
     return (
       <TouchableOpacity
-        style={[styles.section, isExpanded && styles.expandedSection]}
+        style={[
+          styles.section, 
+          isExpanded && styles.expandedSection,
+          { borderLeftColor: iconConfig[title]?.color || '#2c3e50' }
+        ]}
         onPress={() => setExpandedSection(isExpanded ? null : title)}
         activeOpacity={0.7}
       >
         <View style={styles.sectionHeader}>
           <View style={styles.sectionHeaderLeft}>
-            <ThemedText style={styles.sectionTitle}>{title}</ThemedText>
-            <Ionicons 
-              name={iconMap[title] as any} 
-              size={24} 
-              color="#2c3e50" 
-            />
+            <ThemedText style={[styles.sectionTitle, { color: iconConfig[title]?.color }]}>
+              {title}
+            </ThemedText>
+            {iconConfig[title]?.icon}
           </View>
           <Ionicons 
             name={isExpanded ? 'chevron-up' : 'chevron-down'} 
             size={20} 
-            color="#2c3e50" 
+            color={iconConfig[title]?.color || '#2c3e50'} 
           />
         </View>
         {isExpanded && (
@@ -230,6 +268,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: '#e9ecef',
+    borderLeftWidth: 4,  // Add colored border on the left
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -256,6 +295,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
     alignItems: 'center',
     flex: 1,
+    gap: 12,  // Add space between icon and text
   },
   sectionTitle: {
     fontSize: 16,

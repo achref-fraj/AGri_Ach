@@ -6,6 +6,7 @@ export interface CropInfo {
 }
 
 export interface CropDetails {
+  name: string;
   harvestingGuide: string;
   plantingGuide: string;
   weatherConsiderations: string;

@@ -99,7 +99,11 @@ export async function getCropInformation(cropName: string, language: string = 'a
       - الحفاظ على التوازن البيئي`;
     }
 
-    return sections;
+    // Add the crop name to the returned sections
+    return {
+      name: cropName,
+      ...sections
+    };
   } catch (error) {
     console.error('Error getting crop information:', error);
     throw error;
