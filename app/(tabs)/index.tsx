@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Image, StyleSheet, TouchableOpacity, View, Modal, ActivityIndicator, ScrollView, SafeAreaView } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { Image, StyleSheet, TouchableOpacity, View, Modal, ActivityIndicator, ScrollView, SafeAreaView, Animated, Easing } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { getCropInformation } from '../../services/geminiService';
@@ -70,23 +70,88 @@ export default function AgricultureScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
+  // Animation setup
+  const spinValue = useRef(new Animated.Value(0)).current;
+  const fadeAnims = useRef(crops.map(() => new Animated.Value(0))).current;
+
+  useEffect(() => {
+    if (isLoading) {
+      startAnimation();
+    } else {
+      stopAnimation();
+    }
+  }, [isLoading]);
+
+  useEffect(() => {
+    const animations = fadeAnims.map((anim, index) =>
+      Animated.timing(anim, {
+        toValue: 1,
+        duration: 500,
+        delay: index * 50, // Stagger the animations
+        useNativeDriver: true,
+        easing: Easing.bezier(0.4, 0, 0.2, 1),
+      })
+    );
+    
+    Animated.stagger(50, animations).start();
+  }, []);
+
+  const startAnimation = () => {
+    spinValue.setValue(0);
+    Animated.loop(
+      Animated.timing(spinValue, {
+        toValue: 1,
+        duration: 2000,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    ).start();
+  };
+
+  const stopAnimation = () => {
+    spinValue.setValue(0);
+  };
+
+  const spin = spinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+
   const renderCropSection = (title: string, cropsArray: typeof crops) => (
     <View style={styles.section}>
       <ThemedText style={styles.sectionTitle}>{title}</ThemedText>
       <View style={styles.cropGrid}>
-        {cropsArray.map((crop) => (
-          <TouchableOpacity
-            key={crop.id}
-            style={styles.cropItem}
-            onPress={() => handleCropSelect(crop.name)}
-            activeOpacity={0.7}
-          >
-            <View style={styles.cropIconContainer}>
-              <ThemedText style={styles.cropIcon}>{crop.icon}</ThemedText>
-            </View>
-            <ThemedText style={styles.cropName}>{crop.name}</ThemedText>
-          </TouchableOpacity>
-        ))}
+        {cropsArray.map((crop, index) => {
+          const startIndex = crops.findIndex(c => c.id === crop.id);
+          const scaleAndOpacity = fadeAnims[startIndex].interpolate({
+            inputRange: [0, 1],
+            outputRange: [0.3, 1],
+          });
+
+          return (
+            <Animated.View
+              key={crop.id}
+              style={[
+                styles.cropItem,
+                {
+                  opacity: fadeAnims[startIndex],
+                  transform: [{ scale: scaleAndOpacity }],
+                },
+              ]}
+            >
+              <TouchableOpacity
+                onPress={() => handleCropSelect(crop.name)}
+                activeOpacity={0.7}
+                style={styles.cropTouchable}
+              >
+                <View style={styles.cropIconContainer}>
+                  <ThemedText style={styles.cropIcon}>{crop.icon}</ThemedText>
+                </View>
+                <ThemedText style={styles.cropName}>{crop.name}</ThemedText>
+              </TouchableOpacity>
+            </Animated.View>
+          );
+        })}
       </View>
     </View>
   );
@@ -157,7 +222,9 @@ export default function AgricultureScreen() {
 
         {isLoading && (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#0000ff" />
+            <Animated.View style={{ transform: [{ rotate: spin }] }}>
+              <Ionicons name="leaf" size={60} color="#2c3e50" />
+            </Animated.View>
             <ThemedText style={styles.loadingText}>جاري تحميل المعلومات...</ThemedText>
           </View>
         )}
@@ -213,10 +280,8 @@ const styles = StyleSheet.create({
   },
   cropItem: {
     width: '23%',
-    alignItems: 'center',
     marginBottom: 16,
     backgroundColor: '#ffffff',
-    padding: 8,
     borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: {
@@ -226,6 +291,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
     elevation: 2,
+  },
+  cropTouchable: {
+    width: '100%',
+    alignItems: 'center',
+    padding: 8,
   },
   cropIconContainer: {
     width: 50,
