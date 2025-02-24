@@ -1,12 +1,30 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { AnimalDetails } from "../types/animals";
 import { config } from "../app/config";
 
-const genAI = new GoogleGenerativeAI(config.apiKey);
+async function generateContent(prompt: string) {
+  const response = await fetch(`${config.API_URL}?key=${config.apiKey}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{
+          text: prompt
+        }]
+      }]
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.candidates[0].content.parts[0].text;
+}
 
 export async function getAnimalInformation(animalName: string): Promise<AnimalDetails> {
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
   console.log('Starting API call for:', animalName);
 
   const prompt = `
@@ -48,10 +66,7 @@ export async function getAnimalInformation(animalName: string): Promise<AnimalDe
   `;
 
   try {
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-
+    const text = await generateContent(prompt);
     console.log('Raw API Response:', text);
 
     // Default message if section not found

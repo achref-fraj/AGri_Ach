@@ -1,14 +1,32 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { CropDetails } from "../types/agriculture";
 import { config } from "../app/config";
+import { CropDetails } from "../types/agriculture";
 
-// Create a single instance of GoogleGenerativeAI
-const genAI = new GoogleGenerativeAI(config.apiKey);
+// Replace the genAI initialization with fetch implementation
+async function generateContent(prompt: string) {
+  const response = await fetch(`${config.API_URL}?key=${config.apiKey}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{
+          text: prompt
+        }]
+      }]
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.candidates[0].content.parts[0].text;
+}
 
 // Export the function directly
 export async function getCropInformation(cropName: string, language: string = 'ar'): Promise<CropDetails> {
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
   const prompt = `
     Please provide detailed agricultural information about ${cropName}. Format your response exactly as follows, with clear section separators:
 
@@ -62,11 +80,7 @@ export async function getCropInformation(cropName: string, language: string = 'a
   `;
 
   try {
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    // Add logging to debug
+    const text = await generateContent(prompt);
     console.log('Full response:', text);
     
     // Parse sections using markers
