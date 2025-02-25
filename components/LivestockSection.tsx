@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   animalIcon: {
-    fontSize: 32,
+    fontSize: 20,
   },
   animalName: {
     fontSize: 14,

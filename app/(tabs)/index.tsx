@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
   cropTouchable: {
     width: '100%',
     alignItems: 'center',
-    padding: 8,
+    padding: 6,
   },
   cropIconContainer: {
     width: 50,
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   cropIcon: {
-    fontSize: 28,
+    fontSize: 20,
   },
   cropName: {
     fontSize: 12,
