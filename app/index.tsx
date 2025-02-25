@@ -10,8 +10,12 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <ThemedText style={styles.headerText}>مرحباً بك في تطبيق الزراعة</ThemedText>
-        <ThemedText style={styles.subHeader}>اختر ما تريد معرفة المزيد عنه</ThemedText>
+        <View style={styles.welcomeContainer}>
+          <View style={styles.welcomeText}>
+            <ThemedText style={styles.subHeader}>مرحباً بك في تطبيق الزراعة </ThemedText>
+            <ThemedText style={styles.subHeader}>اختر ما تريد معرفة المزيد عنه </ThemedText>
+          </View>
+        </View>
       </View>
 
       <View style={styles.optionsContainer}>
@@ -19,8 +23,8 @@ export default function HomeScreen() {
           style={styles.option}
           onPress={() => router.push('/(tabs)')}
         >
-          <View style={styles.optionIcon}>
-            <Ionicons name="leaf-outline" size={32} color="#2c3e50" />
+          <View style={[styles.optionIcon, { backgroundColor: '#e8f5e9' }]}>
+            <Ionicons name="leaf" size={32} color="#2e7d32" />
           </View>
           <ThemedText style={styles.optionTitle}>معلومات عن المحاصيل</ThemedText>
           <ThemedText style={styles.optionDescription}>
@@ -32,8 +36,8 @@ export default function HomeScreen() {
           style={styles.option}
           onPress={() => router.push('/(tabs)/livestock')}
         >
-          <View style={styles.optionIcon}>
-            <Ionicons name="paw-outline" size={32} color="#2c3e50" />
+          <View style={[styles.optionIcon, { backgroundColor: '#fff3e0' }]}>
+            <Ionicons name="paw" size={32} color="#f57c00" />
           </View>
           <ThemedText style={styles.optionTitle}>الثروة الحيوانية</ThemedText>
           <ThemedText style={styles.optionDescription}>
@@ -52,14 +56,34 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   header: {
-    marginBottom: 32,
-    marginTop: 32,
+    marginBottom: 24,
+    marginTop: 16,
+    backgroundColor: '#f8f9fa',
+    padding: 20,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 2,
+  },
+  welcomeContainer: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginBottom: 16,
+  },
+  welcomeText: {
+    flex: 1,
   },
   headerText: {
     fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'right',
     color: '#2c3e50',
+    marginBottom: 8,
   },
   subHeader: {
     fontSize: 16,
@@ -86,7 +110,6 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,

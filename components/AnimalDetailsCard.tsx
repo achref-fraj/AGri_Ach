@@ -6,7 +6,8 @@ import {
   TouchableOpacity, 
   SafeAreaView,
   Animated,
-  Platform
+  Platform,
+  Share
 } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { AnimalDetails } from '../types/animals';
@@ -26,6 +27,24 @@ export const AnimalDetailsCard: React.FC<AnimalDetailsCardProps> = ({
   onClose 
 }) => {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+
+  const handleShare = async () => {
+    try {
+      const message = `معلومات عن ${animalName}:\n\n` +
+        `التغذية: ${details.feeding}\n` +
+        `العناية اليومية: ${details.care}\n` +
+        `الرعاية الصحية: ${details.health}\n` +
+        `السكن والبيئة: ${details.housing}\n` +
+        `معلومات التربية: ${details.breeding}`;
+
+      await Share.share({
+        message,
+        title: `معلومات عن ${animalName}`,
+      });
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
 
   if (!details) {
     return (
@@ -75,6 +94,9 @@ export const AnimalDetailsCard: React.FC<AnimalDetailsCardProps> = ({
         <TouchableOpacity onPress={onClose} style={styles.closeButton}>
           <Ionicons name="close" size={24} color="#2c3e50" />
         </TouchableOpacity>
+        <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
+          <Ionicons name="share-outline" size={24} color="#2c3e50" />
+        </TouchableOpacity>
         <View style={styles.titleContainer}>
           <ThemedText style={styles.title}>{animalName} {animalIcon}</ThemedText>
         </View>
@@ -110,6 +132,13 @@ const styles = StyleSheet.create({
   closeButton: {
     position: 'absolute',
     left: 16,
+    top: 16,
+    zIndex: 1,
+    padding: 8,
+  },
+  shareButton: {
+    position: 'absolute',
+    right: 16,
     top: 16,
     zIndex: 1,
     padding: 8,
