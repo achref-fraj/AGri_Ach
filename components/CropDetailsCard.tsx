@@ -49,10 +49,20 @@ export const CropDetailsCard: React.FC<CropDetailsCardProps> = ({
     try {
       await Share.share({
         message: `معلومات عن ${cropName}:\n\n` +
-                `🌱 دليل الزراعة: ${details.plantingGuide}\n\n` +
-                `🌾 دليل الحصاد: ${details.harvestingGuide}\n\n` +
-                `🌤️ اعتبارات الطقس: ${details.weatherConsiderations}\n\n` +
-                `🌿 الأسمدة والتربة: ${details.fertilizers}`,
+                `🌱 دليل الزراعة: ${details.plantingGuide || 'غير متوفر'}\n\n` +
+                `🌾 دليل الحصاد: ${details.harvestingGuide || 'غير متوفر'}\n\n` +
+                `🌤️ اعتبارات الطقس: ${details.weatherConsiderations || 'غير متوفر'}\n\n` +
+                `🌿 الأسمدة والتربة: ${details.fertilizers || 'غير متوفر'}\n\n` +
+                `⭐ أفضل الممارسات: ${details.bestPractices || 'غير متوفر'}\n\n` +
+                `🦠 إدارة الأمراض: ${details.diseaseManagement || 'غير متوفر'}\n\n` +
+                `🐛 مكافحة الآفات: ${details.pestControl || 'غير متوفر'}\n\n` +
+                `💧 إدارة المياه: ${details.waterManagement || 'غير متوفر'}\n\n` +
+                `🏞️ تحضير التربة: ${details.soilPreparation || 'غير متوفر'}\n\n` +
+                `🏪 إرشادات التخزين: ${details.storageGuidelines || 'غير متوفر'}\n\n` +
+                `📈 القيمة السوقية: ${details.marketValue || 'غير متوفر'}\n\n` +
+                `🌍 الأثر البيئي: ${details.environmentalImpact || 'غير متوفر'}\n\n` +
+                `🌿 الزراعة العضوية: ${details.organicFarming || 'غير متوفر'}`,
+                
         title: `معلومات زراعية عن ${cropName}`,
       });
     } catch (error) {

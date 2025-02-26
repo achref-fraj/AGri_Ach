@@ -31,11 +31,16 @@ export const AnimalDetailsCard: React.FC<AnimalDetailsCardProps> = ({
   const handleShare = async () => {
     try {
       const message = `معلومات عن ${animalName}:\n\n` +
-        `التغذية: ${details.feeding}\n` +
-        `العناية اليومية: ${details.care}\n` +
-        `الرعاية الصحية: ${details.health}\n` +
-        `السكن والبيئة: ${details.housing}\n` +
-        `معلومات التربية: ${details.breeding}`;
+        `🍎 التغذية: ${details.feeding || 'غير متوفر'}\n\n` +
+        `☀️ العناية اليومية: ${details.care || 'غير متوفر'}\n\n` +
+        `🩺 الرعاية الصحية: ${details.health || 'غير متوفر'}\n\n` +
+        `🏠 السكن والبيئة: ${details.housing || 'غير متوفر'}\n\n` +
+        `❤️ معلومات التربية: ${details.breeding || 'غير متوفر'}\n\n` +
+        `⚠️ الأمراض الشائعة: ${details.diseases || 'غير متوفر'}\n\n` +
+        `💊 الأدوية والعلاجات: ${details.medications || 'غير متوفر'}\n\n` +
+        `🎓 السلوك والتدريب: ${details.behavior || 'غير متوفر'}\n\n` +
+        `💰 الجدوى الاقتصادية: ${details.economics || 'غير متوفر'}\n\n` +
+        `📅 جدول التطعيمات: ${details.vaccination || 'غير متوفر'}`;
 
       await Share.share({
         message,
